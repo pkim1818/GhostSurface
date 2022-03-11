@@ -1,0 +1,85 @@
+m4_changequote({,})m4_dnl
+m4_changecom(!)m4_dnl
+
+m4_define(REAL,real)m4_dnl
+
+m4_define(INTEGER,integer)m4_dnl can put comments here
+
+m4_define(CHARACTER,character)m4_dnl
+
+m4_define(SALLOCATE,{ ! macro expansion of sallocate = set allocate;
+
+!#ifdef DEBUG
+   if( allocated( $1 ) ) then
+    write(0,'("macros    : 0123456789 : $1 already allocated ;")') 
+    stop      'macros    : 0123456789 : $1 already allocated ;'
+   endif
+!#endif
+
+   allocate( $1$2, stat=astat )
+
+!#ifdef DEBUG
+   if( astat.ne.0 ) then
+    write(0,'("macros   : 0123456789 : error allocating $1 ;")') 
+    stop      'macros   : 0123456789 : error allocating $1 ;'
+   endif
+!#endif
+
+   $1$2 = $3
+
+})m4_dnl
+
+m4_define(DALLOCATE,{ ! macro expansion of dallocate = de- allocate;
+
+!#ifdef DEBUG
+   if( .not.allocated( $1 ) ) then
+    write(0,'("macros   : 0123456789 : $1 not already allocated ;")') 
+    stop      'macros   : 0123456789 : $1 not already allocated ;'
+   endif
+!#endif
+
+   deallocate( $1, stat=astat )
+
+!#ifdef DEBUG
+   if( astat.ne.0 ) then
+    write(0,'("macros   : 0123456789 : error de-allocating $1 ;")') 
+    stop      'macros   : 0123456789 : error de-allocating $1 ;'
+   endif
+!#endif
+
+})m4_dnl
+
+
+m4_define(ALLOCATE,if(allocated($1)) stop '$1 allocated'
+	allocate($1$2,stat=astat)
+	if(astat.ne.0) stop 'error allocating $1')m4_dnl can put comments here
+
+m4_define(DEALLOCATE,if(.not.allocated($1)) stop '$1 not allocated'
+	deallocate($1,stat=astat)
+	if(astat.ne.0) stop 'error deallocating $1')m4_dnl can put comments here
+
+m4_define(FATAL,if($2) then
+          write(ounit,'("$1 :    fatal    : $2 ;")')
+          call MPI_ABORT(MPI_COMM_WORLD,1,ierr)
+          stop
+         endif)m4_dnl
+
+m4_define(CPUTIME,MPI_WTIME())m4_dnl
+
+m4_define(LBCAST,call MPI_BCAST($1,$2,MPI_LOGICAL,0,MPI_COMM_WORLD,ierr))m4_dnl can put comments here
+m4_define(IBCAST,call MPI_BCAST($1,$2,MPI_INTEGER,0,MPI_COMM_WORLD,ierr))m4_dnl can put comments here
+m4_define(RBCAST,call MPI_BCAST($1,$2,MPI_DOUBLE_PRECISION,0,MPI_COMM_WORLD,ierr))m4_dnl can put comments here
+m4_define(CBCAST,call MPI_BCAST($1,$2,MPI_CHARACTER,0,MPI_COMM_WORLD,ierr))m4_dnl can put comments here
+
+m4_define(LlBCAST,call MPI_BCAST($1,$2,MPI_LOGICAL,$3,MPI_COMM_WORLD,ierr))m4_dnl can put comments here
+m4_define(IlBCAST,call MPI_BCAST($1,$2,MPI_INTEGER,$3,MPI_COMM_WORLD,ierr))m4_dnl can put comments here
+m4_define(RlBCAST,call MPI_BCAST($1,$2,MPI_DOUBLE_PRECISION,$3,MPI_COMM_WORLD,ierr))m4_dnl can put comments here
+m4_define(ClBCAST,call MPI_BCAST($1,$2,MPI_CHARACTER,$3,MPI_COMM_WORLD,ierr))m4_dnl can put comments here
+
+m4_define(IGATHER,call MPI_GATHER($1,$2,MPI_INTEGER,$3,$2,MPI_INTEGER,0,MPI_COMM_WORLD,ierr))m4_dnl can put comments here
+m4_define(RGATHER,call MPI_GATHER($1,$2,MPI_DOUBLE_PRECISION,$3,$2,MPI_DOUBLE_PRECISION,0,MPI_COMM_WORLD,ierr))m4_dnl can put comments here
+
+m4_define(IALLGATHER,call MPI_ALLGATHER($1,$2,MPI_INTEGER,$3,$2,MPI_INTEGER,MPI_COMM_WORLD,ierr))m4_dnl can put comments here
+m4_define(RALLGATHER,call MPI_ALLGATHER($1,$2,MPI_DOUBLE_PRECISION,$3,$2,MPI_DOUBLE_PRECISION,MPI_COMM_WORLD,ierr))m4_dnl can put comments here
+
+m4_define(MPIFINALIZE,call MPI_FINALIZE(ierr))m4_dnl can put comments here
